@@ -5,9 +5,10 @@ import java.util.List;
 import java.util.Optional;
 
 import com.job_tracker.entity.Resume;
-import com.job_tracker.entity.User;
 import com.job_tracker.repository.ResumeRepository;
-import com.job_tracker.repository.UserRepository;
+import com.job_tracker.userClass.User;
+import com.job_tracker.userClass.UserRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +34,6 @@ public class ResumeService {
             byte[] resumeFile = file.getBytes();
             resume.setResume(resumeFile);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         Optional<User> optionalUser = userRepository.findById(userId);

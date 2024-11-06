@@ -1,7 +1,4 @@
-package com.job_tracker.controller;
-
-import com.job_tracker.entity.User;
-import com.job_tracker.service.UserService;
+package com.job_tracker.userClass;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
