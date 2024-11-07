@@ -1,22 +1,16 @@
 package com.job_tracker.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.job_tracker.dto.ResumeDTO;
 import com.job_tracker.userClass.User;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
-import jakarta.persistence.ManyToOne;
-import java.nio.file.Files;
-import java.util.UUID;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.nio.file.Files;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -33,7 +27,6 @@ public class Resume {
     @JoinColumn(name = "user_id")
     @JsonIgnore
     private User user;
-
     private String resumeName;
 
     public void setResumeName(String resumeName) {
@@ -74,5 +67,13 @@ public class Resume {
                     "File size exceeds the maximum allowed size of 200 KB"
             );
         }
+    }
+
+    public ResumeDTO toDTO() {
+        ResumeDTO dto = new ResumeDTO();
+        dto.setResumeId(this.id);
+        dto.setResumeName(getResumeName());
+        dto.setUser(this.user);
+        return dto;
     }
 }

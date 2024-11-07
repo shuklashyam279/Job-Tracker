@@ -1,16 +1,21 @@
 package com.job_tracker.service;
 
+import com.job_tracker.dto.ResumeDTO;
 import com.job_tracker.entity.Resume;
 import com.job_tracker.repository.ResumeRepository;
 import com.job_tracker.userClass.User;
 import com.job_tracker.userClass.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class ResumeService {
@@ -21,7 +26,7 @@ public class ResumeService {
     @Autowired
     private UserRepository userRepository;
 
-    private User getUser(){
+    private User getUser() {
         return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
@@ -40,14 +45,25 @@ public class ResumeService {
             e.printStackTrace();
             throw new RuntimeException("Failed to save resume", e);
         }
-        User user = getUser();
-        resume.setUser(user);
+        resume.setUser(getUser());
         return resumeRepository.save(resume);
-        // return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    public int countUserResumes(){
+    public int countUserResumes() {
         User user = getUser();
         return resumeRepository.countByUser(null);
+    }
+
+    public List<ResumeDTO> retrieveUserResumes() {
+        List<Resume> resumes = resumeRepository.findByUser(getUser());
+        return resumes
+                .stream()
+                .map(resume -> resume.toDTO())
+                .collect(Collectors.toList());
+    }
+
+    public ResponseEntity<String> deleteUserResume(UUID resumeId) {
+        resumeRepository.deleteById(resumeId);
+        return ResponseEntity.status(HttpStatus.OK).body("Resume deleted successfully.");
     }
 }
