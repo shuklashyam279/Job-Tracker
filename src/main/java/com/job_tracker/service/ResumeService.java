@@ -21,6 +21,10 @@ public class ResumeService {
     @Autowired
     private UserRepository userRepository;
 
+    private User getUser(){
+        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
+
     public List<Resume> getAllResume() {
         return resumeRepository.findAll();
     }
@@ -36,9 +40,14 @@ public class ResumeService {
             e.printStackTrace();
             throw new RuntimeException("Failed to save resume", e);
         }
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = getUser();
         resume.setUser(user);
         return resumeRepository.save(resume);
         // return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    public int countUserResumes(){
+        User user = getUser();
+        return resumeRepository.countByUser(null);
     }
 }

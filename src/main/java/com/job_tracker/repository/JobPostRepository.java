@@ -11,4 +11,5 @@ import java.util.UUID;
 @Repository
 public interface JobPostRepository extends JpaRepository<JobPost, UUID> {
     List<JobPost> findByUser(User user);
+    public int countByUser(User user);
 }

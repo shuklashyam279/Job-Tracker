@@ -1,14 +1,14 @@
 package com.job_tracker.userClass;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -18,6 +18,14 @@ public class UserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    public User getAuthenticatedUser() {
+        User user = (User) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+        return user;
+    }
 
     public ResponseEntity<UserDTO> createUser(User user) {
         User newUser = new User();
@@ -33,11 +41,10 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public UserDTO getUserWithID(UUID id) {
-        Optional<User> optionalUser = userRepository.findById(id);
+    public UserDTO getUserDetails() {
+        Optional<User> optionalUser = userRepository.findById(getAuthenticatedUser().getId());
         User user = optionalUser.orElseThrow(() ->
-                new IllegalArgumentException("User Not Found with ID: " + id)
-        );
+                new IllegalArgumentException("User Not Found with ID: " + getAuthenticatedUser().getId()));
         return user.toDTO();
     }
 

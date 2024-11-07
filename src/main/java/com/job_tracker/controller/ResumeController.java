@@ -19,12 +19,12 @@ public class ResumeController {
     @Autowired
     private ResumeService resumeServices;
 
-    @GetMapping("/all-resume")
-    public List<Resume> getAllResume() {
+    @GetMapping("/v1/all-resume")
+    public List<Resume> getAllResume(){
         return resumeServices.getAllResume();
     }
 
-    @PostMapping("/create-resume")
+    @PostMapping("/v1/create-resume")
     public ResponseEntity<Resume> createResume(@RequestParam("file") MultipartFile file){
         try {
             Resume savedResume = resumeServices.saveResume(file);
@@ -32,6 +32,11 @@ public class ResumeController {
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
+    }
+
+    @GetMapping("/v1/user-resume-count")
+    public int countUsersResume(){
+        return resumeServices.countUserResumes();
     }
 
 }

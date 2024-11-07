@@ -42,4 +42,9 @@ public class JobController {
     public ResponseEntity<List<JobPost>> retrieveUserJobPosts() {
         return jobPostServices.retrieveUserJobPosts();
     }
+
+    @GetMapping("/v1/count-user-job-posts")
+    public ResponseEntity<Integer> countUserJobPosts(){
+        return jobPostServices.countUserJobPosts();
+    }
 }

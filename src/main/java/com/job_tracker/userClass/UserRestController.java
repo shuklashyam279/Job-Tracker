@@ -23,8 +23,8 @@ public class UserRestController {
         return userServices.createUser(user);
     }
 
-    @GetMapping("/user")
-    public UserDTO getUserWithID(@RequestParam UUID id){
-        return userServices.getUserWithID(id);
+    @GetMapping("/user-detail")
+    public UserDTO getUserDetails(){
+        return userServices.getUserDetails();
     }
 }
