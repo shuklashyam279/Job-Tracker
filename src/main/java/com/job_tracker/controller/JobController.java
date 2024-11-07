@@ -47,4 +47,14 @@ public class JobController {
     public ResponseEntity<Integer> countUserJobPosts(){
         return jobPostServices.countUserJobPosts();
     }
+
+    @GetMapping("/v1/retrieve-job-post-with-user-id")
+    public JobPost retrieveJobPostWithUserId(UUID jobPostId){
+        return jobPostServices.retrieveUserJobPostWithId(jobPostId);
+    }
+
+    @PutMapping("/v1/update-job-post")
+    public ResponseEntity<String> updateJobPost(@RequestBody JobPost jobPost){
+        return jobPostServices.updateJobPost(jobPost);
+    }
 }

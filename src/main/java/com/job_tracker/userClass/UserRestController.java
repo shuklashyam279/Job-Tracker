@@ -23,7 +23,7 @@ public class UserRestController {
         return userServices.createUser(user);
     }
 
-    @GetMapping("/user-detail")
+    @GetMapping("/v1/user-detail")
     public UserDTO getUserDetails(){
         return userServices.getUserDetails();
     }
