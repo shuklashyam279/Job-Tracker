@@ -1,6 +1,9 @@
 package com.job_tracker.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.job_tracker.dto.JobPostDTO;
 import com.job_tracker.userClass.User;
+import io.micrometer.common.lang.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -17,20 +21,45 @@ import java.time.LocalDate;
 public class JobPost {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     private String jobTitle;
     private String companyName;
     private String jobDescription;
     private LocalDate jobDate;
     private String jobLink;
-    private String resume;
 
     @Enumerated(EnumType.STRING)
     private JobStatusEnum Status;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    @Nullable
+    @JsonIgnore
+    private User user;
+
+    @OneToOne
+    @PrimaryKeyJoinColumn
+    @Nullable
+    @JsonIgnore
+    private Resume resume;
+
+    public JobPostDTO toDTO() {
+        JobPostDTO dto = new JobPostDTO();
+        dto.setJobPostId(this.id);
+        dto.setJobTitle(this.jobTitle);
+        dto.setCompanyName(this.companyName);
+        dto.setJobDescription(this.jobDescription);
+        dto.setJobDate(this.jobDate);
+        dto.setJobLink(this.jobLink);
+        return dto;
+    }
+
+    @Nullable
+    private String resumeName;
+
+    public void setResumeName() {
+        this.resumeName = resume.getResumeName();
+    }
 }

@@ -1,19 +1,16 @@
 package com.job_tracker.service;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
-
 import com.job_tracker.entity.Resume;
 import com.job_tracker.repository.ResumeRepository;
 import com.job_tracker.userClass.User;
 import com.job_tracker.userClass.UserRepository;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
 
 @Service
 public class ResumeService {
@@ -28,20 +25,20 @@ public class ResumeService {
         return resumeRepository.findAll();
     }
 
-    public ResponseEntity<Resume> saveResume(MultipartFile file, Long userId) {
+    public Resume saveResume(MultipartFile file) {
         Resume resume = new Resume();
         try {
             byte[] resumeFile = file.getBytes();
             resume.setResume(resumeFile);
+            String resumeName = file.getOriginalFilename();
+            resume.setResumeName(resumeName);
         } catch (IOException e) {
             e.printStackTrace();
+            throw new RuntimeException("Failed to save resume", e);
         }
-        Optional<User> optionalUser = userRepository.findById(userId);
-        User user = optionalUser.orElseThrow(() ->
-                new IllegalArgumentException("User not found with ID: " + userId)
-        );
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         resume.setUser(user);
-        resumeRepository.save(resume);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return resumeRepository.save(resume);
+        // return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }
