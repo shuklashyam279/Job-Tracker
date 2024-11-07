@@ -43,6 +43,7 @@ public class User implements UserDetails {
     private String email;
 
     private String password;
+    @Nullable
     private String role;
 
     public UserDTO toDTO(){

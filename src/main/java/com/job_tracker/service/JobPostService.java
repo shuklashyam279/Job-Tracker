@@ -48,4 +48,18 @@ public class JobPostService {
         jobPostRepository.save(jobPost);
         return ResponseEntity.status(HttpStatus.OK).body(jobPost.toDTO());
     }
+
+    public ResponseEntity<String> deleteUsersJobPost(UUID jobPostId){
+        Optional<JobPost> optionalJobPost = jobPostRepository.findById(jobPostId);
+        JobPost jobPost = optionalJobPost.orElseThrow(()-> new IllegalArgumentException("JobPost does Not Exist with Id: " + jobPostId));
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User jobPostUser = jobPost.getUser();
+        jobPostRepository.deleteById(jobPostId);
+        return ResponseEntity.status(HttpStatus.OK).body("Job post deleted successfully.");
+    }
+
+    public ResponseEntity<List<JobPost>> retrieveUserJobPosts(){
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return ResponseEntity.status(HttpStatus.OK).body(jobPostRepository.findByUser(user));
+    }
 }

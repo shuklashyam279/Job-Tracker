@@ -15,18 +15,31 @@ public class JobController {
     @Autowired
     private JobPostService jobPostServices;
 
-    @GetMapping("/all_jobs")
+    @GetMapping("/v1/all-jobs")
     public List<JobPost> allJobPosts() {
         return jobPostServices.allJobPosts();
     }
 
-    @PostMapping("/add_job")
-    public ResponseEntity<JobPostDTO> addJob(@RequestBody JobPost jobPost){
+    @PostMapping("/v1/add-job")
+    public ResponseEntity<JobPostDTO> addJob(@RequestBody JobPost jobPost) {
         return jobPostServices.createJobPosts(jobPost);
     }
 
-    @PutMapping("/set-resume")
-    public ResponseEntity<JobPostDTO> setResume(@RequestBody JobPost jobPost,@RequestParam UUID resumeID){
+    @PutMapping("/v1/set-resume")
+    public ResponseEntity<JobPostDTO> setResume(
+            @RequestBody JobPost jobPost,
+            @RequestParam UUID resumeID
+    ) {
         return jobPostServices.setResume(jobPost, resumeID);
+    }
+
+    @DeleteMapping("/v1/delete-job-post")
+    public ResponseEntity<String> deleteUsersJobPost(@RequestParam UUID jobPostId) {
+        return jobPostServices.deleteUsersJobPost(jobPostId);
+    }
+
+    @GetMapping("/v1/retrieve-user-job-posts")
+    public ResponseEntity<List<JobPost>> retrieveUserJobPosts() {
+        return jobPostServices.retrieveUserJobPosts();
     }
 }
