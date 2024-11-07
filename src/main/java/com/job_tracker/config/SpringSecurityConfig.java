@@ -1,5 +1,6 @@
 package com.job_tracker.config;
 
+import com.job_tracker.userClass.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,8 +11,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.job_tracker.userClass.UserRepository;
-
 @Configuration
 public class SpringSecurityConfig {
 
@@ -19,17 +18,17 @@ public class SpringSecurityConfig {
     private UserRepository userRepository;
 
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public UserDetailsService userDetailsService(){
-        return email -> userRepository.findByEmail(email).orElseThrow(()->new UsernameNotFoundException("User not found!!"));
+    public UserDetailsService userDetailsService() {
+        return email -> userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found!!"));
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception{
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
     }
 }
