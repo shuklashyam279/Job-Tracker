@@ -1,14 +1,16 @@
-package com.job_tracker.userClass;
+package com.job_tracker.controller;
 
 import java.util.List;
-import java.util.UUID;
 
+import com.job_tracker.dto.UserDTO;
+import com.job_tracker.entity.User;
+import com.job_tracker.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-public class UserRestController {
+public class UserController {
 
     @Autowired
     private UserService userServices;

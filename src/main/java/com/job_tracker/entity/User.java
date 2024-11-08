@@ -1,6 +1,7 @@
-package com.job_tracker.userClass;
+package com.job_tracker.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.job_tracker.dto.UserDTO;
 import jakarta.annotation.Nullable;
 
 import java.util.*;
@@ -22,9 +23,6 @@ import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import com.job_tracker.entity.JobPost;
-import com.job_tracker.entity.Resume;
 
 @Getter
 @Setter

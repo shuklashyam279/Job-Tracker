@@ -2,7 +2,6 @@ package com.job_tracker.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.job_tracker.dto.ResumeDTO;
-import com.job_tracker.userClass.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,9 +28,6 @@ public class Resume {
     private User user;
     private String resumeName;
 
-    public void setResumeName(String resumeName) {
-        this.resumeName = resumeName;
-    }
 
     public String extractFileName(byte[] resume) {
         try {

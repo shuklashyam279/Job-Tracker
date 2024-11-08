@@ -1,7 +1,7 @@
 package com.job_tracker.repository;
 
 import com.job_tracker.entity.JobPost;
-import com.job_tracker.userClass.User;
+import com.job_tracker.entity.User;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

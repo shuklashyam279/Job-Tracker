@@ -2,9 +2,9 @@ package com.job_tracker.service;
 
 import com.job_tracker.dto.ResumeDTO;
 import com.job_tracker.entity.Resume;
+import com.job_tracker.entity.User;
 import com.job_tracker.repository.ResumeRepository;
-import com.job_tracker.userClass.User;
-import com.job_tracker.userClass.UserRepository;
+import com.job_tracker.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -58,7 +58,7 @@ public class ResumeService {
         List<Resume> resumes = resumeRepository.findByUser(getUser());
         return resumes
                 .stream()
-                .map(resume -> resume.toDTO())
+                .map(Resume::toDTO)
                 .collect(Collectors.toList());
     }
 

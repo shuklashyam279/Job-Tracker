@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.job-tracker</groupId>
 	<artifactId>demo</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<name>demo</name>
 	<description>Spring boot project developed to manage and track applied jobs</description>
 	<url/>

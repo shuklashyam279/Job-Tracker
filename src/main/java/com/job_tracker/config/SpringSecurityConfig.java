@@ -1,6 +1,6 @@
 package com.job_tracker.config;
 
-import com.job_tracker.userClass.UserRepository;
+import com.job_tracker.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
