@@ -33,11 +33,9 @@ public class JobPostService {
     @Autowired
     private ResumeRepository resumeRepository;
 
+    // ==================================Get User from Security Context Holder==================
     private User getUser() {
-        return (User) SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getPrincipal();
+        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
     // ==========================Retrieve All JobPosts===========================================
@@ -48,52 +46,51 @@ public class JobPostService {
                 .findAll(sort)
                 .stream()
                 .map(jobpost -> jobpost.toDTO())
-                .filter(jobpost -> jobpost.getClone() == false)
+                .filter(jobpost -> !jobpost.getClone())
                 .collect(Collectors.toList());
     }
 
     // =============================Create Job Post=====================================
 
-    public ResponseEntity<JobPostDTO> createJobPosts(JobPost jobPost) {
+    public ResponseEntity<String> createJobPosts(JobPost jobPost) {
         User user = getUser();
         jobPost.setUser(user);
         jobPost.setClone(false);
         jobPostRepository.save(jobPost);
-        return ResponseEntity.status(HttpStatus.CREATED).body(jobPost.toDTO());
+        return ResponseEntity.status(HttpStatus.CREATED).body("Job post created Successfully");
     }
+
+    // =============================Set Resume to Job Post====================================
 
     public ResponseEntity<JobPostDTO> setResume(JobPost jobPost, UUID resumeId) {
         Optional<Resume> optionalResume = resumeRepository.findById(resumeId);
-        Resume resume = optionalResume.orElseThrow(() ->
-                new IllegalArgumentException("Resume Does Not Exist!!")
-        );
+        Resume resume = optionalResume.orElseThrow(() -> new IllegalArgumentException("Resume Does Not Exist!!"));
         jobPost.setResume(resume);
         jobPostRepository.save(jobPost);
         return ResponseEntity.status(HttpStatus.OK).body(jobPost.toDTO());
     }
 
+    // =================================Delete User's Job Post=================================
+
     public ResponseEntity<String> deleteUsersJobPost(UUID jobPostId) {
         Optional<JobPost> optionalJobPost = jobPostRepository.findById(jobPostId);
         JobPost jobPost = optionalJobPost.orElseThrow(() ->
-                new IllegalArgumentException(
-                        "JobPost does Not Exist with Id: " + jobPostId
-                )
-        );
+                new IllegalArgumentException("JobPost does Not Exist with Id: " + jobPostId));
         User user = getUser();
         User jobPostUser = jobPost.getUser();
         jobPostRepository.deleteById(jobPostId);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body("Job post deleted successfully.");
+        return ResponseEntity.status(HttpStatus.OK).body("Job post deleted successfully.");
     }
+
+    // =============================Retrieve User's Job Posts================================
 
     public ResponseEntity<List<JobPost>> retrieveUserJobPosts() {
         Sort sort = Sort.by("jobDate").descending();
         User user = getUser();
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(jobPostRepository.findByUser(user, sort));
+        return ResponseEntity.status(HttpStatus.OK).body(jobPostRepository.findByUser(user, sort));
     }
+
+    // ==============================Count User Job Posts=================================
 
     public ResponseEntity<Integer> countUserJobPosts() {
         User user = getUser();
@@ -105,10 +102,9 @@ public class JobPostService {
     // =========================Retrieve User JobPost With ID===============================
     public JobPost retrieveUserJobPostWithId(UUID jobPostId) {
         Optional<JobPost> optionalJobPost = jobPostRepository.findById(jobPostId);
-        JobPost jobPost = optionalJobPost.orElseThrow(() ->
+        return optionalJobPost.orElseThrow(() ->
                 new IllegalArgumentException("No job post found with id: " + jobPostId)
         );
-        return jobPost;
     }
 
     // ============================Update Job Posts=============================
@@ -176,9 +172,16 @@ public class JobPostService {
                 .body("Job post added successfully to your account.");
     }
 
+    // =======================Check Job Post Exists in User Account or Not======================
+
     public boolean checkJobPostInUserJobList(UUID jobPostId) {
         return getUser()
                 .getJobPosts()
                 .contains(jobPostRepository.findById(jobPostId));
+    }
+
+    // ==========================Retrieve User's Job Posts per Day==================================
+    public List<Object[]> retrieveUsersPerDayJobPosts() {
+        return jobPostRepository.countUsersPostPerDay(getUser());
     }
 }

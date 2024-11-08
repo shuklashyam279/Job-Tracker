@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.job_tracker.dto.JobPostDTO;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,12 +25,19 @@ public class JobPost {
     private UUID id;
 
     @Nullable
-    private boolean clone;
+    private Boolean clone;
+
+
+    @Size(min = 3, message = "Job title must have at least 3 characters.")
     private String jobTitle;
+
+    @Size(min = 3, message = "Company name must have at least 3 characters.")
     private String companyName;
+
     private LocalDate jobDate;
 
     @Column(length = 2560)
+    @Size(min = 3, message = "Job Description must have at least 3 characters.")
     private String jobDescription;
 
     @Column(length = 2048)
