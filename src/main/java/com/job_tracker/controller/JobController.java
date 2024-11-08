@@ -16,7 +16,7 @@ public class JobController {
     private JobPostService jobPostServices;
 
     @GetMapping("/v1/all-jobs")
-    public List<JobPost> allJobPosts() {
+    public List<JobPostDTO> allJobPosts() {
         return jobPostServices.allJobPosts();
     }
 
@@ -56,5 +56,10 @@ public class JobController {
     @PutMapping("/v1/update-job-post")
     public ResponseEntity<String> updateJobPost(@RequestBody JobPost jobPost){
         return jobPostServices.updateJobPost(jobPost);
+    }
+
+    @PostMapping("/v1/add-job-with-job-id")
+    public ResponseEntity<String> addJobWithJobId(@RequestParam UUID jobPostId){
+        return jobPostServices.addJobWithJobId(jobPostId);
     }
 }

@@ -24,6 +24,8 @@ public class JobPost {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Nullable
+    private boolean clone;
     private String jobTitle;
     private String companyName;
     private LocalDate jobDate;
@@ -49,6 +51,13 @@ public class JobPost {
     @JsonIgnore
     private Resume resume;
 
+    @Nullable
+    private String resumeName;
+
+    public void setResumeName() {
+        this.resumeName = resume.getResumeName();
+    }
+
     public JobPostDTO toDTO() {
         JobPostDTO dto = new JobPostDTO();
         dto.setJobPostId(this.id);
@@ -57,13 +66,9 @@ public class JobPost {
         dto.setJobDescription(this.jobDescription);
         dto.setJobDate(this.jobDate);
         dto.setJobLink(this.jobLink);
+        dto.setUsername(user.getUsername());
+        dto.setClone(this.clone);
         return dto;
     }
 
-    @Nullable
-    private String resumeName;
-
-    public void setResumeName() {
-        this.resumeName = resume.getResumeName();
-    }
 }

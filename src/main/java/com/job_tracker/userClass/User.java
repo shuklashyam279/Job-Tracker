@@ -60,7 +60,7 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Nullable
     @JsonIgnore
-    private List<JobPost> jobPost = new ArrayList<>();
+    private List<JobPost> jobPosts = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Nullable
