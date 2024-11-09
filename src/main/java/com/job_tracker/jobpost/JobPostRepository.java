@@ -1,7 +1,5 @@
-package com.job_tracker.repository;
+package com.job_tracker.jobpost;
 
-import com.job_tracker.entity.JobPost;
-import com.job_tracker.entity.JobStatusEnum;
 import com.job_tracker.user.User;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;

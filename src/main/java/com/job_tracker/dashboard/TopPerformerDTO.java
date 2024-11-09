@@ -1,4 +1,4 @@
-package com.job_tracker.dto;
+package com.job_tracker.dashboard;
 
 import lombok.Getter;
 import lombok.Setter;

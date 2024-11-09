@@ -1,10 +1,6 @@
-package com.job_tracker.controller;
+package com.job_tracker.jobpost;
 
-import com.job_tracker.dto.JobPostDTO;
-import com.job_tracker.dto.TopPerformerDTO;
-import com.job_tracker.entity.JobPost;
-import com.job_tracker.entity.JobStatusEnum;
-import com.job_tracker.service.JobPostService;
+import com.job_tracker.dashboard.TopPerformerDTO;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

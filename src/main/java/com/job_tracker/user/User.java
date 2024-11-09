@@ -1,7 +1,7 @@
 package com.job_tracker.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.job_tracker.entity.JobPost;
+import com.job_tracker.jobpost.JobPost;
 import com.job_tracker.resume.Resume;
 import jakarta.annotation.Nullable;
 

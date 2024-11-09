@@ -1,7 +1,6 @@
-package com.job_tracker.dto;
+package com.job_tracker.jobpost;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.job_tracker.entity.JobStatusEnum;
 import lombok.Getter;
 import lombok.Setter;
 
