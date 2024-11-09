@@ -18,6 +18,6 @@ public class ResumeDTO {
     private UUID id;
     private String resumeName;
 
-    @JsonIgnore
-    private User user;
+/*    @JsonIgnore
+    private User user;*/
 }

@@ -64,12 +64,4 @@ public class Resume {
             );
         }
     }
-
-    public ResumeDTO toDTO() {
-        ResumeDTO dto = new ResumeDTO();
-        dto.setId(this.id);
-        dto.setResumeName(getResumeName());
-        dto.setUser(this.user);
-        return dto;
-    }
 }
