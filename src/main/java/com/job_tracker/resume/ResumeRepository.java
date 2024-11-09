@@ -1,6 +1,5 @@
-package com.job_tracker.repository;
+package com.job_tracker.resume;
 
-import com.job_tracker.entity.Resume;
 import com.job_tracker.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -10,7 +9,7 @@ import java.util.UUID;
 
 @Repository
 public interface ResumeRepository extends JpaRepository<Resume, UUID> {
-    public int countByUser(User user);
+    int countByUser(User user);
 
-    public List<Resume> findByUser(User user);
+    List<Resume> findByUser(User user);
 }

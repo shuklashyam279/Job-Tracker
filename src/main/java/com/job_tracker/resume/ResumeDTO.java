@@ -1,4 +1,4 @@
-package com.job_tracker.dto;
+package com.job_tracker.resume;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.job_tracker.entity.User;

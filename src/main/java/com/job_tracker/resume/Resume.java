@@ -1,7 +1,7 @@
-package com.job_tracker.entity;
+package com.job_tracker.resume;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.job_tracker.dto.ResumeDTO;
+import com.job_tracker.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

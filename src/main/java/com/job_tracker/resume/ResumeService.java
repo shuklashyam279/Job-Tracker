@@ -1,9 +1,6 @@
-package com.job_tracker.service;
+package com.job_tracker.resume;
 
-import com.job_tracker.dto.ResumeDTO;
-import com.job_tracker.entity.Resume;
 import com.job_tracker.entity.User;
-import com.job_tracker.repository.ResumeRepository;
 import com.job_tracker.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

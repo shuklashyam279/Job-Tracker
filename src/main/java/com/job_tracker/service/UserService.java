@@ -23,11 +23,10 @@ public class UserService {
     private PasswordEncoder passwordEncoder;
 
     public User getAuthenticatedUser() {
-        User user = (User) SecurityContextHolder
+        return (User) SecurityContextHolder
                 .getContext()
                 .getAuthentication()
                 .getPrincipal();
-        return user;
     }
 
     public ResponseEntity<UserDTO> createUser(User user) {

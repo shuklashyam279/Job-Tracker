@@ -2,6 +2,7 @@ package com.job_tracker.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.job_tracker.dto.UserDTO;
+import com.job_tracker.resume.Resume;
 import jakarta.annotation.Nullable;
 
 import java.util.*;
