@@ -67,7 +67,7 @@ public class Resume {
 
     public ResumeDTO toDTO() {
         ResumeDTO dto = new ResumeDTO();
-        dto.setResumeId(this.id);
+        dto.setId(this.id);
         dto.setResumeName(getResumeName());
         dto.setUser(this.user);
         return dto;

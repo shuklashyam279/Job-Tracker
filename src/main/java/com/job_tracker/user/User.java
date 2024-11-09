@@ -46,17 +46,6 @@ public class User implements UserDetails {
     @JsonIgnore
     private String role;
 
-    public UserDTO toDTO(){
-        UserDTO dto = new UserDTO();
-        dto.setEmail(this.email);
-        dto.setFullName(this.fullName);
-        dto.setRole(this.role);
-        if(this.resumes != null){
-            dto.setResume(this.resumes.stream().map(Resume::getResumeName).collect(Collectors.toList()));
-        }
-        return dto;
-    }
-
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Nullable
     @JsonIgnore

@@ -5,6 +5,7 @@ import com.job_tracker.user.UserDTO;
 import com.job_tracker.resume.Resume;
 import com.job_tracker.user.User;
 import com.job_tracker.resume.ResumeRepository;
+import com.job_tracker.user.UserMapper;
 import com.job_tracker.user.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -208,7 +209,7 @@ public class JobPostService {
                     Long count = (Long) item[1];
 
                     // Map user details to UserDTO
-                    UserDTO userDTO = user.toDTO();
+                    UserDTO userDTO = UserMapper.INSTANCE.toDTO(user);
                     TopPerformerDTO result = new TopPerformerDTO();
                     result.setFullName(userDTO.getFullName());
                     result.setJobPostCount(count);

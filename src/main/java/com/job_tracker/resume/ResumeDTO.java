@@ -15,7 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class ResumeDTO {
 
-    private UUID resumeId;
+    private UUID id;
     private String resumeName;
 
     @JsonIgnore
