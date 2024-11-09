@@ -1,6 +1,7 @@
 package com.job_tracker.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.job_tracker.entity.JobStatusEnum;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,6 +20,7 @@ public class JobPostDTO {
     private String jobLink;
     private String username;
     private boolean clone;
+    private JobStatusEnum jobStatus;
 
     @JsonIgnore
     public boolean getClone() {

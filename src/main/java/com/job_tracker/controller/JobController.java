@@ -1,7 +1,9 @@
 package com.job_tracker.controller;
 
 import com.job_tracker.dto.JobPostDTO;
+import com.job_tracker.dto.TopPerformerDTO;
 import com.job_tracker.entity.JobPost;
+import com.job_tracker.entity.JobStatusEnum;
 import com.job_tracker.service.JobPostService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -86,5 +89,29 @@ public class JobController {
     @GetMapping("/v1/retrieve-users-per-day-jobposts")
     public List<Object[]> retrieveUsersPerDayJobPosts() {
         return jobPostServices.retrieveUsersPerDayJobPosts();
+    }
+
+    // ====================================Top 3 Performer's of the day with their Job Counts ===========================
+    @GetMapping("/v1/top-three-performer-of-the-day-with-their-job-count")
+    public ResponseEntity<List<TopPerformerDTO>> topPerformersOfTheDay() {
+        return jobPostServices.retrieveTopPerformersOfTheDay();
+    }
+
+    // =============================Retrieve JobPosts with Filters Applied===================================
+    @GetMapping("/v1/retrieve-job-posts-with-filters-applied")
+    public ResponseEntity<List<JobPostDTO>> retrieveJobPostsWithFiltersApplied(
+            @RequestParam String jobTitle,
+            @RequestParam String companyName,
+            @RequestParam String jobDescription,
+            @RequestParam LocalDate jobDate,
+            @RequestParam JobStatusEnum status
+    ) {
+        return jobPostServices.retrieveJobsByFilters(
+                jobTitle,
+                companyName,
+                jobDescription,
+                jobDate,
+                status
+        );
     }
 }

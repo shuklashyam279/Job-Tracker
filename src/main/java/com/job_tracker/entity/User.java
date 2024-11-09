@@ -16,6 +16,7 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.OneToMany;
 
+import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,11 +38,12 @@ public class User implements UserDetails {
     private UUID id;
     private String fullName;
 
-    @Column(unique = true)
+    @Email(message = "Please provide a valid email")
     private String email;
 
     private String password;
     @Nullable
+    @JsonIgnore
     private String role;
 
     public UserDTO toDTO(){
@@ -71,6 +73,7 @@ public class User implements UserDetails {
     }
 
     @Override
+    @JsonIgnore
     public String getUsername() {
         return email;
     }
