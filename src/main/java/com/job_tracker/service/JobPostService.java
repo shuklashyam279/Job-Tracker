@@ -242,4 +242,23 @@ public class JobPostService {
                 .status(HttpStatus.OK)
                 .body(jobPostRepository.findJobPostContainingString(string).stream().map(JobPost::toDTO).filter(jobpost->jobpost.getClone() != true).collect(Collectors.toList()));
     }
+
+    // ===================================Retrieve User Job Posts Containing String======================================================
+    public ResponseEntity<List<JobPostDTO>> retrieveUserJobPostsContainingString(String string) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(
+                        jobPostRepository
+                                .findUserJobPostContainingString(getUser(), string)
+                                .stream()
+                                .map(JobPost::toDTO)
+                                .filter(jobpost -> jobpost.getClone() != true)
+                                .collect(Collectors.toList())
+                );
+    }
+
+    // ===================================Retrieve Job Counts Per Day===============================
+    public ResponseEntity<List<Object[]>> retrieveJobCountsPerDay(){
+        return ResponseEntity.status(HttpStatus.OK).body(jobPostRepository.findJobCountPerDay());
+    }
 }

@@ -57,6 +57,21 @@ public interface JobPostRepository extends JpaRepository<JobPost, UUID> {
                     "jp.companyName LIKE %:string% OR " +
                     "jp.jobDescription LIKE %:string%"
     )
-    List<JobPost> findJobPostContainingString(@Param("string") String string);
+
+    public List<JobPost> findJobPostContainingString(@Param("string") String string);
+
+    // ============================Retrieve Job Posts Containing String======================================
+    @Query(
+            "Select jp FROM JobPost jp WHERE " +
+                    "(jp.user =:user) AND " +
+                    "(jp.jobTitle LIKE %:string% OR " +
+                    "jp.companyName LIKE %:string% OR " +
+                    "jp.jobDescription LIKE %:string%)"
+    )
+    List<JobPost> findUserJobPostContainingString(User user,@Param("string") String string);
+
+    // ===============================Retrieve Job Posts Per Day====================================
+    @Query("SELECT count(jp), jp.jobDate FROM JobPost jp WHERE jp.clone = false GROUP BY jp.jobDate ORDER BY jp.jobDate DESC")
+    public List<Object[]> findJobCountPerDay();
 
 }

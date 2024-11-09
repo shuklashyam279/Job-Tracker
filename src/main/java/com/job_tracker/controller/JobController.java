@@ -120,4 +120,16 @@ public class JobController {
     public ResponseEntity<List<JobPostDTO>> retrieveJobPostsWithString(@RequestParam String string){
         return jobPostServices.retrieveJobPostsContainingString(string);
     }
+
+    // ======================================Search Box For User Component===================================
+    @GetMapping("/v1/search-user-jobposts-containing-string")
+    public ResponseEntity<List<JobPostDTO>> retrieveUserJobPostsContainingString(@RequestParam String string) {
+        return jobPostServices.retrieveUserJobPostsContainingString(string);
+    }
+
+    // =======================================Retrieve Job Post Count Per Day================================
+    @GetMapping("/v1/retrieve-jobpost-count-per-day")
+    public ResponseEntity<List<Object[]>> retrieveJobCountsPerDay() {
+        return jobPostServices.retrieveJobCountsPerDay();
+    }
 }
