@@ -3,6 +3,7 @@ package com.job_tracker.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.job_tracker.dto.JobPostDTO;
 import com.job_tracker.resume.Resume;
+import com.job_tracker.user.User;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;

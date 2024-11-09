@@ -2,14 +2,14 @@ package com.job_tracker.service;
 
 import com.job_tracker.dto.JobPostDTO;
 import com.job_tracker.dto.TopPerformerDTO;
-import com.job_tracker.dto.UserDTO;
+import com.job_tracker.user.UserDTO;
 import com.job_tracker.entity.JobPost;
 import com.job_tracker.entity.JobStatusEnum;
 import com.job_tracker.resume.Resume;
-import com.job_tracker.entity.User;
+import com.job_tracker.user.User;
 import com.job_tracker.repository.JobPostRepository;
 import com.job_tracker.resume.ResumeRepository;
-import com.job_tracker.repository.UserRepository;
+import com.job_tracker.user.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;

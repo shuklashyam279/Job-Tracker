@@ -1,4 +1,4 @@
-package com.job_tracker.dto;
+package com.job_tracker.user;
 
 import java.util.List;
 

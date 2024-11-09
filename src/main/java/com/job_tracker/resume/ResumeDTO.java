@@ -1,7 +1,7 @@
 package com.job_tracker.resume;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.job_tracker.entity.User;
+import com.job_tracker.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
