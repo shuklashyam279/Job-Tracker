@@ -51,4 +51,11 @@ public class UserService {
         return user.toDTO();
     }
 
+    // =========================Count Total Users=============================
+    public ResponseEntity<Long> countTotalUsers(){
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(userRepository.count());
+    }
+
 }

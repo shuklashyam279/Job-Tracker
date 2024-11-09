@@ -60,6 +60,9 @@ public class JobPostService {
         User user = getUser();
         jobPost.setUser(user);
         jobPost.setClone(false);
+        if(jobPost.getJobDate()==null){
+            jobPost.setJobDate(LocalDate.now());
+        }
         jobPostRepository.save(jobPost);
         return ResponseEntity.status(HttpStatus.CREATED).body("Job post created Successfully");
     }
@@ -88,10 +91,18 @@ public class JobPostService {
 
     // =============================Retrieve User's Job Posts================================
 
-    public ResponseEntity<List<JobPost>> retrieveUserJobPosts() {
+    public ResponseEntity<List<JobPostDTO>> retrieveUserJobPosts() {
         Sort sort = Sort.by("jobDate").descending();
         User user = getUser();
-        return ResponseEntity.status(HttpStatus.OK).body(jobPostRepository.findByUser(user, sort));
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(
+                        jobPostRepository
+                                .findByUser(user, sort)
+                                .stream()
+                                .map(JobPost::toDTO)
+                                .collect(Collectors.toList())
+                );
     }
 
     // ==============================Count User Job Posts=================================

@@ -29,4 +29,9 @@ public class UserController {
     public UserDTO getUserDetails(){
         return userServices.getUserDetails();
     }
+
+    @GetMapping("/v1/dashboard/count-total-users")
+    public ResponseEntity<Long> countTotalUsers() {
+        return userServices.countTotalUsers();
+    }
 }
