@@ -49,7 +49,7 @@ public class JobPostService {
         return jobPostRepository
                 .findAll(sort)
                 .stream()
-                .map(jobpost -> jobpost.toDTO())
+                .map(JobPost::toDTO)
                 .filter(jobpost -> !jobpost.getClone())
                 .collect(Collectors.toList());
     }
@@ -197,8 +197,8 @@ public class JobPostService {
         List<TopPerformerDTO> topPerformerDTOs = results
                 .stream()
                 .map(item -> {
-                    User user = (User) item[0]; // Assuming the first element is the User object
-                    Long count = (Long) item[1]; // Assuming the second element is the count
+                    User user = (User) item[0];
+                    Long count = (Long) item[1];
 
                     // Map user details to UserDTO
                     UserDTO userDTO = user.toDTO();
@@ -234,5 +234,12 @@ public class JobPostService {
                 .collect(Collectors.toList());
 
         return ResponseEntity.status(HttpStatus.OK).body(filteredJobPostDTO);
+    }
+
+    // ==================================Retrieve Job Posts Containing String==========================================
+    public ResponseEntity<List<JobPostDTO>> retrieveJobPostsContainingString(String string) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(jobPostRepository.findJobPostContainingString(string).stream().map(JobPost::toDTO).filter(jobpost->jobpost.getClone() != true).collect(Collectors.toList()));
     }
 }

@@ -23,7 +23,7 @@ public class JobController {
     private JobPostService jobPostServices;
 
     // =============================Retrieve All Job Posts==========================================
-    @GetMapping("/v1/all-jobs")
+    @GetMapping("/v1/dashboard/all-jobs")
     public List<JobPostDTO> allJobPosts() {
         return jobPostServices.allJobPosts();
     }
@@ -92,7 +92,7 @@ public class JobController {
     }
 
     // ====================================Top 3 Performer's of the day with their Job Counts ===========================
-    @GetMapping("/v1/top-three-performer-of-the-day-with-their-job-count")
+    @GetMapping("/v1/dashboard/top-three-performer-of-the-day-with-their-job-count")
     public ResponseEntity<List<TopPerformerDTO>> topPerformersOfTheDay() {
         return jobPostServices.retrieveTopPerformersOfTheDay();
     }
@@ -113,5 +113,11 @@ public class JobController {
                 jobDate,
                 status
         );
+    }
+
+    // ========================================Dashboard Search Functionality=============================================
+    @GetMapping("/v1/dashboard/search-jobposts-containing-strings")
+    public ResponseEntity<List<JobPostDTO>> retrieveJobPostsWithString(@RequestParam String string){
+        return jobPostServices.retrieveJobPostsContainingString(string);
     }
 }

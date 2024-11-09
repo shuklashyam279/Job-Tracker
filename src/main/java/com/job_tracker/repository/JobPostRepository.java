@@ -33,6 +33,7 @@ public interface JobPostRepository extends JpaRepository<JobPost, UUID> {
     )
     public List<Object[]> topPerformersOfTheDay(@Param("date") LocalDate date);
 
+    // =============================Retrieve Job Posts With Filters================================
     @Query(
             "SELECT jp FROM JobPost jp WHERE " +
                     "(jp.jobTitle LIKE %:jobTitle% OR " +
@@ -41,11 +42,21 @@ public interface JobPostRepository extends JpaRepository<JobPost, UUID> {
                     "(jp.jobDate = :jobDate AND jp.status = :jobStatus) " +
                     "ORDER BY jp.jobDate DESC"
     )
-    List<JobPost> findJobPostByFilters(
+    public List<JobPost> findJobPostByFilters(
             @Param("jobTitle") String jobTitle,
             @Param("companyName") String companyName,
             @Param("jobDescription") String jobDescription,
             @Param("jobDate") LocalDate jobDate,
             @Param("jobStatus") JobStatusEnum jobStatus
     );
+
+    // ============================Retrieve Job Posts Containing String======================================
+    @Query(
+            "Select jp FROM JobPost jp WHERE " +
+                    "jp.jobTitle LIKE %:string% OR " +
+                    "jp.companyName LIKE %:string% OR " +
+                    "jp.jobDescription LIKE %:string%"
+    )
+    List<JobPost> findJobPostContainingString(@Param("string") String string);
+
 }
