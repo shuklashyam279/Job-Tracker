@@ -9,11 +9,15 @@ import com.job_tracker.user.UserMapper;
 import com.job_tracker.user.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -42,14 +46,27 @@ public class JobPostServiceImpl implements JobPostService {
 
     // ==========================Retrieve All JobPosts===========================================
 
-    public List<JobPostDTO> allJobPosts() {
+    public List<JobPostDTO> allJobPosts(int pageNumber) {
         Sort sort = Sort.by("jobDate").descending();
-        return jobPostRepository
-                .findAll(sort)
+        Pageable pageable = PageRequest.of(0, 50, sort);
+        Page<JobPost> page = jobPostRepository.findAll(pageable);
+        List<JobPostDTO> jobPosts = page
                 .stream()
                 .map(JobPostMapper.INSTANCE::toDTO)
-                .filter(jobpost -> !jobpost.getClone())
+                .filter(jobPost -> !jobPost.getClone())
                 .collect(Collectors.toList());
+        if (jobPosts.isEmpty()) {
+            return Collections.emptyList();
+        } else if (jobPosts.size() < 50 && page.hasNext()) {
+            Pageable remainingPageable = PageRequest.of(1, 50 - jobPosts.size(), sort);
+            List<JobPostDTO> remainingJobPosts = jobPostRepository.findAll(remainingPageable)
+                    .stream()
+                    .map(JobPostMapper.INSTANCE::toDTO)
+                    .filter(jobPost -> !jobPost.getClone())
+                    .toList();
+            jobPosts.addAll(remainingJobPosts);
+        }
+        return jobPosts;
     }
 
     // =============================Create Job Post=====================================
@@ -78,10 +95,7 @@ public class JobPostServiceImpl implements JobPostService {
     public String deleteUsersJobPost(UUID jobPostId) {
         Optional<JobPost> optionalJobPost = jobPostRepository.findById(jobPostId);
         JobPost jobPost = optionalJobPost.orElseThrow(() ->
-                new IllegalArgumentException(
-                        "JobPost does Not Exist with Id: " + jobPostId
-                )
-        );
+                new IllegalArgumentException("JobPost does Not Exist with Id: " + jobPostId));
         User user = getUser();
         User jobPostUser = jobPost.getUser();
         jobPostRepository.deleteById(jobPostId);
@@ -91,6 +105,7 @@ public class JobPostServiceImpl implements JobPostService {
     // =============================Retrieve User's Job Posts=================================
     public List<JobPostDTO> retrieveUserJobPosts() {
         Sort sort = Sort.by("jobDate").descending();
+        Pageable page = PageRequest.of(1,50, sort);
         User user = getUser();
         return jobPostRepository
                 .findByUser(user, sort)
