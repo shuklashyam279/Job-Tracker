@@ -6,13 +6,13 @@ import org.springframework.stereotype.Service;
 @Service
 public interface UserService {
 
-    public User getAuthenticatedUser();
+    User getAuthenticatedUser();
 
-    public UserDTO createUser(User user);
+    UserDTO createUser(User user);
 
-    public List<UserDTO> getAllUsers();
+    List<UserDTO> getAllUsers(int pageNumber);
 
-    public UserDTO getUserDetails();
+    UserDTO getUserDetails();
 
-    public Long countTotalUsers();
+    Long countTotalUsers();
 }
