@@ -10,8 +10,6 @@ import com.job_tracker.user.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +32,7 @@ public class JobPostServiceImpl implements JobPostService {
     @Autowired
     private ResumeRepository resumeRepository;
 
-    // ==================================Get User from Security Context Holder==================
+    // ==========================Get User from Security Context Holder==========================
     public User getUser() {
         return (User) SecurityContextHolder
                 .getContext()
@@ -56,7 +54,7 @@ public class JobPostServiceImpl implements JobPostService {
 
     // =============================Create Job Post=====================================
 
-    public ResponseEntity<String> createJobPosts(JobPost jobPost) {
+    public String createJobPosts(JobPost jobPost) {
         User user = getUser();
         jobPost.setUser(user);
         jobPost.setClone(false);
@@ -64,55 +62,47 @@ public class JobPostServiceImpl implements JobPostService {
             jobPost.setJobDate(LocalDate.now());
         }
         jobPostRepository.save(jobPost);
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body("Job post created Successfully");
+        return "Job post created Successfully";
     }
 
     // =============================Set Resume to Job Post======================================
-    public ResponseEntity<JobPostDTO> setResume(JobPost jobPost, UUID resumeId) {
+    public JobPostDTO setResume(JobPost jobPost, UUID resumeId) {
         Optional<Resume> optionalResume = resumeRepository.findById(resumeId);
-        Resume resume = optionalResume.orElseThrow(() ->
-                new IllegalArgumentException("Resume Does Not Exist!!"));
+        Resume resume = optionalResume.orElseThrow(() -> new IllegalArgumentException("Resume Does Not Exist!!"));
         jobPost.setResume(resume);
         jobPostRepository.save(jobPost);
-        return ResponseEntity.status(HttpStatus.OK).body(JobPostMapper.INSTANCE.toDTO(jobPost));
+        return JobPostMapper.INSTANCE.toDTO(jobPost);
     }
 
     // =================================Delete User's Job Post======================================
-    public ResponseEntity<String> deleteUsersJobPost(UUID jobPostId) {
+    public String deleteUsersJobPost(UUID jobPostId) {
         Optional<JobPost> optionalJobPost = jobPostRepository.findById(jobPostId);
         JobPost jobPost = optionalJobPost.orElseThrow(() ->
-                new IllegalArgumentException("JobPost does Not Exist with Id: " + jobPostId));
+                new IllegalArgumentException(
+                        "JobPost does Not Exist with Id: " + jobPostId
+                )
+        );
         User user = getUser();
         User jobPostUser = jobPost.getUser();
         jobPostRepository.deleteById(jobPostId);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body("Job post deleted successfully.");
+        return "Job post deleted successfully.";
     }
 
     // =============================Retrieve User's Job Posts=================================
-    public ResponseEntity<List<JobPostDTO>> retrieveUserJobPosts() {
+    public List<JobPostDTO> retrieveUserJobPosts() {
         Sort sort = Sort.by("jobDate").descending();
         User user = getUser();
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(
-                        jobPostRepository
-                                .findByUser(user, sort)
-                                .stream()
-                                .map(JobPostMapper.INSTANCE::toDTO)
-                                .collect(Collectors.toList())
-                );
+        return jobPostRepository
+                .findByUser(user, sort)
+                .stream()
+                .map(JobPostMapper.INSTANCE::toDTO)
+                .collect(Collectors.toList());
     }
 
     // ==============================Count User Job Posts=====================================
-    public ResponseEntity<Integer> countUserJobPosts() {
+    public Integer countUserJobPosts() {
         User user = getUser();
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(jobPostRepository.countByUser(user));
+        return jobPostRepository.countByUser(user);
     }
 
     // =========================Retrieve User JobPost With ID===============================
@@ -124,7 +114,7 @@ public class JobPostServiceImpl implements JobPostService {
     }
 
     // ============================Update Job Posts=============================
-    public ResponseEntity<String> updateJobPost(JobPost jobPost) {
+    public String updateJobPost(JobPost jobPost) {
         Optional<JobPost> optionalJobPost = jobPostRepository.findById(jobPost.getId());
         JobPost existingJobPost = optionalJobPost.orElseThrow(() ->
                 new IllegalArgumentException(
@@ -150,21 +140,16 @@ public class JobPostServiceImpl implements JobPostService {
         try {
             jobPostRepository.save(existingJobPost);
         } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Updation failed due to: " + e.getMessage());
+            return "Failed to update due to: " + e.getMessage();
         }
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body("Job post updated successfully;");
+        return "Job post updated successfully";
     }
 
     // =============================Clone Job Post==================================
-    public ResponseEntity<String> addJobWithJobId(UUID jobPostid) {
-        Optional<JobPost> optionalJobPost = jobPostRepository.findById(jobPostid);
+    public String addJobWithJobId(UUID jobPostId) {
+        Optional<JobPost> optionalJobPost = jobPostRepository.findById(jobPostId);
         JobPost oldJobPost = optionalJobPost.orElseThrow(() ->
-                new IllegalArgumentException("Job does not exist with id: " + jobPostid)
-        );
+                new IllegalArgumentException("Job does not exist with id: " + jobPostId));
         JobStatusEnum status = JobStatusEnum.BOOKMARKED;
         JobPost newJobPost = new JobPost();
         newJobPost.setUser(getUser());
@@ -176,9 +161,7 @@ public class JobPostServiceImpl implements JobPostService {
         newJobPost.setStatus(status);
         newJobPost.setJobDate(LocalDate.now());
         jobPostRepository.save(newJobPost);
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body("Job post added successfully to your account.");
+        return "Job post added successfully to your account.";
     }
 
     // =======================Check Job Post Exists in User Account or Not========================
@@ -194,19 +177,14 @@ public class JobPostServiceImpl implements JobPostService {
     }
 
     // ==========================Top 3 Performer's of the day with their Job Counts ===================
-    public ResponseEntity<List<TopPerformerDTO>> retrieveTopPerformersOfTheDay() {
+    public List<TopPerformerDTO> retrieveTopPerformersOfTheDay() {
         LocalDate date = LocalDate.now();
         List<Object[]> results = jobPostRepository.topPerformersOfTheDay(date);
-
         List<TopPerformerDTO> topPerformerDTOs = results
                 .stream()
                 .map(item -> {
                     User user = (User) item[0];
                     Long count = (Long) item[1];
-
-                    // Map user details to UserDTO
-
-                    // UserDTO userDTO = user.toDTO();
                     UserDTO userDTO = UserMapper.INSTANCE.toDTO(user);
                     TopPerformerDTO result = new TopPerformerDTO();
                     result.setFullName(userDTO.getFullName());
@@ -215,67 +193,48 @@ public class JobPostServiceImpl implements JobPostService {
                 })
                 .collect(Collectors.toList());
         log.info("Value of List Top Performers: " + topPerformerDTOs);
-
-        return ResponseEntity.status(HttpStatus.OK).body(topPerformerDTOs);
+        return topPerformerDTOs;
     }
 
     // ==========================Retrieve Jobpost with Filters Applied==================================
-    public ResponseEntity<List<JobPostDTO>> retrieveJobsByFilters(
+    public List<JobPostDTO> retrieveJobsByFilters(
             String jobTitle,
             String companyName,
             String jobDescription,
             LocalDate jobDate,
             JobStatusEnum status
     ) {
-        List<JobPostDTO> filteredJobPostDTO = jobPostRepository
-                .findJobPostByFilters(
-                        jobTitle,
-                        companyName,
-                        jobDescription,
-                        jobDate,
-                        status
-                )
+        return jobPostRepository
+                .findJobPostByFilters(jobTitle, companyName, jobDescription, jobDate, status)
                 .stream()
                 .map(JobPostMapper.INSTANCE::toDTO)
                 .collect(Collectors.toList());
-
-        return ResponseEntity.status(HttpStatus.OK).body(filteredJobPostDTO);
     }
 
     // ==================================Retrieve Job Posts Containing String==========================================
-    public ResponseEntity<List<JobPostDTO>> retrieveJobPostsContainingString(String string) {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(
-                        jobPostRepository
-                                .findJobPostContainingString(string)
-                                .stream()
-                                .map(JobPostMapper.INSTANCE::toDTO)
-                                .filter(jobpost -> jobpost.getClone() != true)
-                                .collect(Collectors.toList())
-                );
+    public List<JobPostDTO> retrieveJobPostsContainingString(String string) {
+        return jobPostRepository
+                .findJobPostContainingString(string)
+                .stream()
+                .map(JobPostMapper.INSTANCE::toDTO)
+                .filter(jobpost -> !jobpost.getClone())
+                .collect(Collectors.toList());
     }
 
     // ===================================Retrieve User Job Posts Containing String======================================================
-    public ResponseEntity<List<JobPostDTO>> retrieveUserJobPostsContainingString(
-            String string
-    ) {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(
-                        jobPostRepository
-                                .findUserJobPostContainingString(getUser(), string)
-                                .stream()
-                                .map(JobPostMapper.INSTANCE::toDTO)
-                                .filter(jobpost -> jobpost.getClone() != true)
-                                .collect(Collectors.toList())
-                );
+    public List<JobPostDTO> retrieveUserJobPostsContainingString(String string) {
+        return
+                jobPostRepository
+                        .findUserJobPostContainingString(getUser(), string)
+                        .stream()
+                        .map(JobPostMapper.INSTANCE::toDTO)
+                        .filter(jobpost -> !jobpost.getClone())
+                        .collect(Collectors.toList())
+                ;
     }
 
     // ===================================Retrieve Job Counts Per Day===============================
-    public ResponseEntity<List<Object[]>> retrieveJobCountsPerDay() {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(jobPostRepository.findJobCountPerDay());
+    public List<Object[]> retrieveJobCountsPerDay() {
+        return jobPostRepository.findJobCountPerDay();
     }
 }
