@@ -48,5 +48,5 @@ public interface JobPostService {
 
     List<JobPostDTO> retrieveUserJobPostsContainingString(String string);
 
-    List<Object[]> retrieveJobCountsPerDay();
+    List<Object[]> retrieveJobCountsPerDay(int pageNumber);
 }

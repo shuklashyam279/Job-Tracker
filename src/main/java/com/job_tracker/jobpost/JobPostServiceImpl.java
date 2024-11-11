@@ -289,12 +289,27 @@ public class JobPostServiceImpl implements JobPostService {
                         .stream()
                         .map(JobPostMapper.INSTANCE::toDTO)
                         .filter(jobpost -> !jobpost.getClone())
-                        .collect(Collectors.toList())
-                ;
+                        .collect(Collectors.toList());
     }
 
     // ===================================Retrieve Job Counts Per Day===============================
-    public List<Object[]> retrieveJobCountsPerDay() {
-        return jobPostRepository.findJobCountPerDay();
+    public List<Object[]> retrieveJobCountsPerDay(int pageNumber) {
+        int pageSize = 7;
+        Sort sort = Sort.by("jobDate").descending();
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+        Page<Object[]> page = jobPostRepository.findJobCountPerDay(pageable);
+        if (page.hasContent()) {
+            return page.getContent();
+        } else {
+            // Check if there are more pages available
+            if (page.hasNext()) {
+                // Fetch the next page
+                pageable = pageable.next();
+                page = jobPostRepository.findJobCountPerDay(pageable);
+                return page.getContent();
+            } else {
+                return new ArrayList<>();
+            }
+        }
     }
 }

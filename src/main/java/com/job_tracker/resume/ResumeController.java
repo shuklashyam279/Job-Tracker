@@ -16,7 +16,7 @@ public class ResumeController {
     private ResumeServiceImpl resumeServicesImpl;
 
     @GetMapping("/v1/all-resume")
-    public List<Resume> getAllResume() {
+    public List<ResumeDTO> getAllResume() {
         return resumeServicesImpl.getAllResume();
     }
 

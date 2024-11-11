@@ -189,11 +189,9 @@ public class JobPostController {
         }
     }
 
-    // ======================================Search Box For User Component===================================
+    // ======================================Retrieve User Job Posts Containing String===================================
     @GetMapping("/v1/search-user-jobpost-containing-string")
-    public ResponseEntity<?> retrieveUserJobPostsContainingString(
-            @RequestParam String string
-    ) {
+    public ResponseEntity<?> retrieveUserJobPostsContainingString(@RequestParam String string, @RequestParam int pageNumber) {
         try {
             return ResponseEntity
                     .status(HttpStatus.OK)
@@ -205,11 +203,11 @@ public class JobPostController {
 
     // =======================================Retrieve Job Post Count Per Day================================
     @GetMapping("/v1/dashboard/retrieve-jobpost-count-per-day")
-    public ResponseEntity<?> retrieveJobCountsPerDay() {
+    public ResponseEntity<?> retrieveJobCountsPerDay(@RequestParam int pageNumber) {
         try {
             return ResponseEntity
                     .status(HttpStatus.OK)
-                    .body(jobPostService.retrieveJobCountsPerDay());
+                    .body(jobPostService.retrieveJobCountsPerDay(pageNumber));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }

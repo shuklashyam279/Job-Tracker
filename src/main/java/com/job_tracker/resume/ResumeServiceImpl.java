@@ -28,8 +28,12 @@ public class ResumeServiceImpl implements ResumeService{
                 .getPrincipal();
     }
 
-    public List<Resume> getAllResume() {
-        return resumeRepository.findAll();
+    public List<ResumeDTO> getAllResume() {
+        return resumeRepository
+                .findAll()
+                .stream()
+                .map(ResumeMapper.INSTANCE::toDTO)
+                .collect(Collectors.toList());
     }
 
     public String saveResume(MultipartFile file) {
