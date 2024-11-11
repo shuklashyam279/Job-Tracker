@@ -17,6 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -48,7 +49,7 @@ public class JobPostServiceImpl implements JobPostService {
 
     public List<JobPostDTO> allJobPosts(int pageNumber) {
         Sort sort = Sort.by("jobDate").descending();
-        Pageable pageable = PageRequest.of(0, 50, sort);
+        Pageable pageable = PageRequest.of(pageNumber, 50, sort);
         Page<JobPost> page = jobPostRepository.findAll(pageable);
         List<JobPostDTO> jobPosts = page
                 .stream()
@@ -103,15 +104,29 @@ public class JobPostServiceImpl implements JobPostService {
     }
 
     // =============================Retrieve User's Job Posts=================================
-    public List<JobPostDTO> retrieveUserJobPosts() {
+    public List<JobPostDTO> retrieveUserJobPosts(int pageNumber) {
         Sort sort = Sort.by("jobDate").descending();
-        Pageable page = PageRequest.of(1,50, sort);
-        User user = getUser();
-        return jobPostRepository
-                .findByUser(user, sort)
+        Pageable pageable = PageRequest.of(pageNumber, 50, sort);
+        Page<JobPost> page = jobPostRepository.findByUser(getUser(), pageable);
+        List<JobPostDTO> jobPosts = page
+                .getContent()
                 .stream()
                 .map(JobPostMapper.INSTANCE::toDTO)
                 .collect(Collectors.toList());
+
+        if(jobPosts.isEmpty()){
+            return new ArrayList<>();
+        }else if(page.hasNext()){
+            return jobPosts;
+        }else{
+            List<JobPostDTO> newJobPosts = page
+                    .getContent()
+                    .stream()
+                    .map(JobPostMapper.INSTANCE::toDTO)
+                    .toList();
+            jobPosts.addAll(newJobPosts);
+            return jobPosts;
+        }
     }
 
     // ==============================Count User Job Posts=====================================
@@ -187,8 +202,23 @@ public class JobPostServiceImpl implements JobPostService {
     }
 
     // ==========================Retrieve User's Job Posts per Day==================================
-    public List<Object[]> retrieveUsersPerDayJobPosts() {
-        return jobPostRepository.countUsersPostPerDay(getUser());
+    public List<Object[]> retrieveUsersPerDayJobPosts(int pageNumber) {
+        int pageSize = 7;
+        Sort sort = Sort.by("jobDate").descending();
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+        Page<Object[]> page = jobPostRepository.countUsersPostPerDay(getUser(), pageable );
+        List<Object[]> jobPostPerDay = new ArrayList<>(page.getContent());
+        if (jobPostPerDay.isEmpty()) {
+            return new ArrayList<>();
+        } else {
+            if (page.hasNext()) {
+                return jobPostPerDay;
+            } else {
+                Page<Object[]> nextPage = jobPostRepository.countUsersPostPerDay(getUser(), pageable);
+                jobPostPerDay.addAll(nextPage.getContent());
+            }
+        }
+        return jobPostPerDay;
     }
 
     // ==========================Top 3 Performer's of the day with their Job Counts ===================
@@ -227,13 +257,28 @@ public class JobPostServiceImpl implements JobPostService {
     }
 
     // ==================================Retrieve Job Posts Containing String==========================================
-    public List<JobPostDTO> retrieveJobPostsContainingString(String string) {
-        return jobPostRepository
-                .findJobPostContainingString(string)
-                .stream()
+    public List<JobPostDTO> retrieveJobPostsContainingString(String string, int pageNumber) {
+        Sort sort = Sort.by("jobDate").descending();
+        int pageSize = 50;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+        Page<JobPost> page = jobPostRepository.findJobPostContainingString(string, pageable);
+        List<JobPostDTO> jobPostDTOs = page.getContent().stream()
                 .map(JobPostMapper.INSTANCE::toDTO)
                 .filter(jobpost -> !jobpost.getClone())
                 .collect(Collectors.toList());
+
+        if (jobPostDTOs.isEmpty()) {
+            return new ArrayList<>();
+        } else if(page.hasNext()){
+            return jobPostDTOs;
+        }else{
+            List<JobPostDTO> newJobPostDTOs = page.getContent().stream()
+                    .map(JobPostMapper.INSTANCE::toDTO)
+                    .filter(jobpost -> !jobpost.getClone())
+                    .toList();
+            jobPostDTOs.addAll(newJobPostDTOs);
+            return jobPostDTOs;
+        }
     }
 
     // ===================================Retrieve User Job Posts Containing String======================================================

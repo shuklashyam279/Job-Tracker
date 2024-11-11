@@ -74,11 +74,11 @@ public class JobPostController {
 
     // ===============================Retrieve User's Job Posts========================================
     @GetMapping("/v1/retrieve-user-job-posts")
-    public ResponseEntity<?> retrieveUserJobPosts() {
+    public ResponseEntity<?> retrieveUserJobPosts(@RequestParam int pageNumber) {
         try {
             return ResponseEntity
                     .status(HttpStatus.OK)
-                    .body(jobPostService.retrieveUserJobPosts());
+                    .body(jobPostService.retrieveUserJobPosts(pageNumber));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
@@ -134,14 +134,13 @@ public class JobPostController {
 
     // ==================================Retrieve User's Job Posts Count Of Each Day=====================================
     @GetMapping("/v1/retrieve-user-per-day-jobpost")
-    public List<Object[]> retrieveUsersPerDayJobPosts() {
-        return jobPostService.retrieveUsersPerDayJobPosts();
+    public List<Object[]> retrieveUsersPerDayJobPosts(@RequestParam int pageNumber) {
+        return jobPostService.retrieveUsersPerDayJobPosts(pageNumber);
     }
 
     // ====================================Top 3 Performer's of the day with their Job Counts ===========================
     @GetMapping(
-            "/v1/dashboard/top-three-performer-of-the-day-with-their-job-count"
-    )
+            "/v1/dashboard/top-three-performer-of-the-day-with-their-job-count")
     public ResponseEntity<?> topPerformersOfTheDay() {
         try {
             return ResponseEntity
@@ -179,14 +178,12 @@ public class JobPostController {
     }
 
     // ========================================Dashboard Search Functionality=============================================
-    @GetMapping("/v1/dashboard/search-jobpost-containing-strings")
-    public ResponseEntity<?> retrieveJobPostsWithString(
-            @RequestParam String string
-    ) {
+    @GetMapping("/v1/dashboard/search-jobPosts-containing-strings")
+    public ResponseEntity<?> retrieveJobPostsWithString(@RequestParam String string, @RequestParam int pageNumber) {
         try {
             return ResponseEntity
                     .status(HttpStatus.OK)
-                    .body(jobPostService.retrieveJobPostsContainingString(string));
+                    .body(jobPostService.retrieveJobPostsContainingString(string, pageNumber));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }

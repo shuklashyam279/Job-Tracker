@@ -1,7 +1,8 @@
 package com.job_tracker.jobpost;
 
 import com.job_tracker.user.User;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,16 +16,13 @@ import java.util.UUID;
 public interface JobPostRepository extends JpaRepository<JobPost, UUID> {
     String sortBy = "jobDate";
 
-    public List<JobPost> findByUser(User user, Sort sort);
+    Page<JobPost> findByUser(User user, Pageable pageable);
 
-    public int countByUser(User user);
+    int countByUser(User user);
 
-    public boolean existsByUser(User user);
+    boolean existsByUser(User user);
 
-    @Query(
-            "SELECT COUNT(e), e.jobDate FROM JobPost e WHERE e.user = :user GROUP BY e.jobDate ORDER BY e.jobDate DESC"
-    )
-    public List<Object[]> countUsersPostPerDay(@Param("user") User user);
+    Page<Object[]> countUsersPostPerDay(@Param("user") User user, Pageable pageable);
 
     @Query(
             "SELECT e.user, COUNT(e) FROM JobPost e WHERE e.jobDate=:date GROUP BY e.user ORDER BY COUNT(e) DESC"
@@ -40,7 +38,7 @@ public interface JobPostRepository extends JpaRepository<JobPost, UUID> {
                     "(jp.jobDate = :jobDate AND jp.status = :jobStatus) " +
                     "ORDER BY jp.jobDate DESC"
     )
-    public List<JobPost> findJobPostByFilters(
+    List<JobPost> findJobPostByFilters(
             @Param("jobTitle") String jobTitle,
             @Param("companyName") String companyName,
             @Param("jobDescription") String jobDescription,
@@ -59,7 +57,7 @@ public interface JobPostRepository extends JpaRepository<JobPost, UUID> {
                     "u.fullName LIKE %:string% " +
                     "ORDER BY jp.jobDate "
     )
-    public List<JobPost> findJobPostContainingString(@Param("string") String string);
+    Page<JobPost> findJobPostContainingString(@Param("string") String string, Pageable pageable);
 
     // ============================Retrieve Users Job Posts Containing String======================================
     @Query(
@@ -75,6 +73,6 @@ public interface JobPostRepository extends JpaRepository<JobPost, UUID> {
     // ===============================Retrieve Job Posts Per Day=================================================
 
     @Query("SELECT count(jp), jp.jobDate FROM JobPost jp WHERE jp.clone = false GROUP BY jp.jobDate ORDER BY jp.jobDate DESC")
-    public List<Object[]> findJobCountPerDay();
+    List<Object[]> findJobCountPerDay();
 
 }

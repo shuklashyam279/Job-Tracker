@@ -20,7 +20,7 @@ public interface JobPostService {
 
     String deleteUsersJobPost(UUID jobPostId);
 
-    List<JobPostDTO> retrieveUserJobPosts();
+    List<JobPostDTO> retrieveUserJobPosts(int pageNumber);
 
     Integer countUserJobPosts();
 
@@ -32,7 +32,7 @@ public interface JobPostService {
 
     boolean checkJobPostInUserJobList(UUID jobPostId);
 
-    List<Object[]> retrieveUsersPerDayJobPosts();
+    List<Object[]> retrieveUsersPerDayJobPosts(int pageNumber);
 
     List<TopPerformerDTO> retrieveTopPerformersOfTheDay();
 
@@ -44,13 +44,9 @@ public interface JobPostService {
             JobStatusEnum status
     );
 
-    List<JobPostDTO> retrieveJobPostsContainingString(
-            String string
-    );
+    List<JobPostDTO> retrieveJobPostsContainingString(String string, int pageNumber);
 
-    List<JobPostDTO> retrieveUserJobPostsContainingString(
-            String string
-    );
+    List<JobPostDTO> retrieveUserJobPostsContainingString(String string);
 
     List<Object[]> retrieveJobCountsPerDay();
 }
