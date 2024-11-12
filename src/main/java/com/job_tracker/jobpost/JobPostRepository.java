@@ -22,12 +22,11 @@ public interface JobPostRepository extends JpaRepository<JobPost, UUID> {
 
     boolean existsByUser(User user);
 
+    @Query("SELECT COUNT(e), e.jobDate FROM JobPost e WHERE e.user = :user GROUP BY e.jobDate ORDER BY e.jobDate DESC")
     Page<Object[]> countUsersPostPerDay(@Param("user") User user, Pageable pageable);
 
-    @Query(
-            "SELECT e.user, COUNT(e) FROM JobPost e WHERE e.jobDate=:date GROUP BY e.user ORDER BY COUNT(e) DESC"
-    )
-    public List<Object[]> topPerformersOfTheDay(@Param("date") LocalDate date);
+    @Query("SELECT e.user, COUNT(e) FROM JobPost e WHERE e.jobDate=:date GROUP BY e.user ORDER BY COUNT(e) DESC")
+    List<Object[]> topPerformersOfTheDay(@Param("date") LocalDate date);
 
     // =============================Retrieve Job Posts With Filters================================
     @Query(
@@ -73,6 +72,6 @@ public interface JobPostRepository extends JpaRepository<JobPost, UUID> {
     // ===============================Retrieve Job Posts Per Day=================================================
 
     @Query("SELECT count(jp), jp.jobDate FROM JobPost jp WHERE jp.clone = false GROUP BY jp.jobDate ORDER BY jp.jobDate DESC")
-    public Page<Object[]> findJobCountPerDay(Pageable pageable);
+    Page<Object[]> findJobCountPerDay(Pageable pageable);
 
 }
