@@ -1,5 +1,6 @@
 package com.job_tracker.jwtAuthentication;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,12 +24,10 @@ public class JwtAuthenticationController {
     private JwtHelper helper;
 
     @PostMapping("/authenticate")
-    public ResponseEntity<JwtResponse> login(@RequestBody JwtRequest request) {
-        this.doAuthenticate(request.getUsername(), request.getPassword());
+    public ResponseEntity<JwtResponse> login(@RequestBody @Valid JwtRequest request) {
+        this.doAuthenticate(request.getEmail(), request.getPassword());
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(
-                request.getUsername()
-        );
+        UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
         String token = this.helper.generateToken(userDetails);
 
         JwtResponse response = JwtResponse
