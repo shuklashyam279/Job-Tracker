@@ -21,10 +21,9 @@ public class UserRepositoryTest {
         userRepository.save(user);
 
         // Act
-        User actualUser = userRepository.findByEmail("rahi@gmail.com").get();
+        User actualUser = userRepository.findByEmail("shyamshukla279@gmail.com").get();
 
         // Assert
         assertThat(actualUser).isEqualTo(user);
     }
 }
-
