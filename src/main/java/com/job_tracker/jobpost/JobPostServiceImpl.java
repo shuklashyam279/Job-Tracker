@@ -7,13 +7,13 @@ import com.job_tracker.user.User;
 import com.job_tracker.user.UserDTO;
 import com.job_tracker.user.UserMapper;
 import com.job_tracker.user.UserRepository;
+import com.job_tracker.user.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -37,13 +37,8 @@ public class JobPostServiceImpl implements JobPostService {
     @Autowired
     private ResumeRepository resumeRepository;
 
-    // ==========================Get User from Security Context Holder==========================
-    public User getUser() {
-        return (User) SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getPrincipal();
-    }
+    @Autowired
+    private UserService userService;
 
     // ==========================Retrieve All JobPosts===========================================
 
@@ -73,7 +68,7 @@ public class JobPostServiceImpl implements JobPostService {
     // =============================Create Job Post=====================================
 
     public String createJobPosts(JobPost jobPost) {
-        User user = getUser();
+        User user = userService.getAuthenticatedUser();
         jobPost.setUser(user);
         jobPost.setClone(false);
         if (jobPost.getJobDate() == null) {
@@ -97,7 +92,7 @@ public class JobPostServiceImpl implements JobPostService {
         Optional<JobPost> optionalJobPost = jobPostRepository.findById(jobPostId);
         JobPost jobPost = optionalJobPost.orElseThrow(() ->
                 new IllegalArgumentException("JobPost does Not Exist with Id: " + jobPostId));
-        User user = getUser();
+        User user = userService.getAuthenticatedUser();
         User jobPostUser = jobPost.getUser();
         jobPostRepository.deleteById(jobPostId);
         return "Job post deleted successfully.";
@@ -107,7 +102,7 @@ public class JobPostServiceImpl implements JobPostService {
     public List<JobPostDTO> retrieveUserJobPosts(int pageNumber) {
         Sort sort = Sort.by("jobDate").descending();
         Pageable pageable = PageRequest.of(pageNumber, 50, sort);
-        Page<JobPost> page = jobPostRepository.findByUser(getUser(), pageable);
+        Page<JobPost> page = jobPostRepository.findByUser(userService.getAuthenticatedUser(), pageable);
         List<JobPostDTO> jobPosts = page
                 .getContent()
                 .stream()
@@ -131,7 +126,7 @@ public class JobPostServiceImpl implements JobPostService {
 
     // ==============================Count User Job Posts=====================================
     public Integer countUserJobPosts() {
-        User user = getUser();
+        User user = userService.getAuthenticatedUser();
         return jobPostRepository.countByUser(user);
     }
 
@@ -182,7 +177,7 @@ public class JobPostServiceImpl implements JobPostService {
                 new IllegalArgumentException("Job does not exist with id: " + jobPostId));
         JobStatusEnum status = JobStatusEnum.BOOKMARKED;
         JobPost newJobPost = new JobPost();
-        newJobPost.setUser(getUser());
+        newJobPost.setUser(userService.getAuthenticatedUser());
         newJobPost.setJobTitle(oldJobPost.getJobTitle());
         newJobPost.setCompanyName(oldJobPost.getCompanyName());
         newJobPost.setJobDescription(oldJobPost.getJobDescription());
@@ -194,19 +189,12 @@ public class JobPostServiceImpl implements JobPostService {
         return "Job post added successfully to your account.";
     }
 
-    // =======================Check Job Post Exists in User Account or Not========================
-    public boolean checkJobPostInUserJobList(UUID jobPostId) {
-        return getUser()
-                .getJobPosts()
-                .contains(jobPostRepository.findById(jobPostId));
-    }
-
     // ==========================Retrieve User's Job Posts per Day==================================
     public List<Object[]> retrieveUsersPerDayJobPosts(int pageNumber) {
         int pageSize = 7;
         Sort sort = Sort.by("jobDate").descending();
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
-        Page<Object[]> page = jobPostRepository.countUsersPostPerDay(getUser(), pageable );
+        Page<Object[]> page = jobPostRepository.countUsersPostPerDay(userService.getAuthenticatedUser(), pageable );
         List<Object[]> jobPostPerDay = new ArrayList<>(page.getContent());
         if (jobPostPerDay.isEmpty()) {
             return new ArrayList<>();
@@ -214,7 +202,7 @@ public class JobPostServiceImpl implements JobPostService {
             if (page.hasNext()) {
                 return jobPostPerDay;
             } else {
-                Page<Object[]> nextPage = jobPostRepository.countUsersPostPerDay(getUser(), pageable);
+                Page<Object[]> nextPage = jobPostRepository.countUsersPostPerDay(userService.getAuthenticatedUser(), pageable);
                 jobPostPerDay.addAll(nextPage.getContent());
             }
         }
@@ -285,7 +273,7 @@ public class JobPostServiceImpl implements JobPostService {
     public List<JobPostDTO> retrieveUserJobPostsContainingString(String string) {
         return
                 jobPostRepository
-                        .findUserJobPostContainingString(getUser(), string)
+                        .findUserJobPostContainingString(userService.getAuthenticatedUser(), string)
                         .stream()
                         .map(JobPostMapper.INSTANCE::toDTO)
                         .filter(jobpost -> !jobpost.getClone())

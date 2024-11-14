@@ -53,8 +53,7 @@ public class ResumeServiceImpl implements ResumeService{
     }
 
     public int countUserResumes() {
-        User user = getUser();
-        return resumeRepository.countByUser(null);
+        return resumeRepository.countByUser(getUser());
     }
 
     public List<ResumeDTO> retrieveUserResumes() {

@@ -10,7 +10,6 @@ import java.util.UUID;
 
 @Service
 public interface JobPostService {
-    User getUser();
 
     List<JobPostDTO> allJobPosts(int pageNumber);
 
@@ -29,8 +28,6 @@ public interface JobPostService {
     String updateJobPost(JobPost jobPost);
 
     String addJobWithJobId(UUID jobPostId);
-
-    boolean checkJobPostInUserJobList(UUID jobPostId);
 
     List<Object[]> retrieveUsersPerDayJobPosts(int pageNumber);
 
