@@ -1,4 +1,4 @@
-package com.job_tracker.jwtAuthentication;
+package com.job_tracker.authentication.jwt;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

@@ -64,8 +64,4 @@ public class JobPost {
     @Nullable
     private String resumeName;
 
-    public void setResumeName() {
-        this.resumeName = resume.getResumeName();
-    }
-
 }

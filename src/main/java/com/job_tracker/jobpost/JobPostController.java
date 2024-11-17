@@ -1,7 +1,6 @@
 package com.job_tracker.jobpost;
 
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -14,8 +13,11 @@ import java.util.UUID;
 
 @RestController
 public class JobPostController {
-    @Autowired
-    private JobPostService jobPostService;
+    private final JobPostService jobPostService;
+
+    public JobPostController(JobPostService jobPostService) {
+        this.jobPostService = jobPostService;
+    }
 
     // =============================Retrieve All Job Posts==========================================
     @GetMapping("/v1/dashboard/all-jobs")

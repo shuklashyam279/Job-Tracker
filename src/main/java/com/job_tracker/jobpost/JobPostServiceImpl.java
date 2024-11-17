@@ -6,7 +6,6 @@ import com.job_tracker.resume.ResumeRepository;
 import com.job_tracker.user.User;
 import com.job_tracker.user.UserDTO;
 import com.job_tracker.user.UserMapper;
-import com.job_tracker.user.UserRepository;
 import com.job_tracker.user.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,22 +27,24 @@ import java.util.stream.Collectors;
 @Slf4j
 public class JobPostServiceImpl implements JobPostService {
 
-    @Autowired
-    private JobPostRepository jobPostRepository;
+    public static final String JOB_DATE = "jobDate";
+    private final JobPostRepository jobPostRepository;
+    private final ResumeRepository resumeRepository;
+    private final UserService userService;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private ResumeRepository resumeRepository;
-
-    @Autowired
-    private UserService userService;
+    public JobPostServiceImpl(JobPostRepository jobPostRepository,
+                              ResumeRepository resumeRepository,
+                              UserService userService) {
+        this.jobPostRepository = jobPostRepository;
+        this.resumeRepository = resumeRepository;
+        this.userService = userService;
+    }
 
     // ==========================Retrieve All JobPosts===========================================
 
     public List<JobPostDTO> allJobPosts(int pageNumber) {
-        Sort sort = Sort.by("jobDate").descending();
+        Sort sort = Sort.by(JOB_DATE).descending();
         Pageable pageable = PageRequest.of(pageNumber, 50, sort);
         Page<JobPost> page = jobPostRepository.findAll(pageable);
         List<JobPostDTO> jobPosts = page
@@ -89,18 +90,16 @@ public class JobPostServiceImpl implements JobPostService {
 
     // =================================Delete User's Job Post======================================
     public String deleteUsersJobPost(UUID jobPostId) {
-        Optional<JobPost> optionalJobPost = jobPostRepository.findById(jobPostId);
-        JobPost jobPost = optionalJobPost.orElseThrow(() ->
-                new IllegalArgumentException("JobPost does Not Exist with Id: " + jobPostId));
-        User user = userService.getAuthenticatedUser();
-        User jobPostUser = jobPost.getUser();
+        if (!jobPostRepository.existsByUserAndId(userService.getAuthenticatedUser(), jobPostId)) {
+            throw new IllegalArgumentException("JobPost does Not Exist with Id: " + jobPostId);
+        }
         jobPostRepository.deleteById(jobPostId);
         return "Job post deleted successfully.";
     }
 
     // =============================Retrieve User's Job Posts=================================
     public List<JobPostDTO> retrieveUserJobPosts(int pageNumber) {
-        Sort sort = Sort.by("jobDate").descending();
+        Sort sort = Sort.by(JOB_DATE).descending();
         Pageable pageable = PageRequest.of(pageNumber, 50, sort);
         Page<JobPost> page = jobPostRepository.findByUser(userService.getAuthenticatedUser(), pageable);
         List<JobPostDTO> jobPosts = page
@@ -109,11 +108,11 @@ public class JobPostServiceImpl implements JobPostService {
                 .map(JobPostMapper.INSTANCE::toDTO)
                 .collect(Collectors.toList());
 
-        if(jobPosts.isEmpty()){
+        if (jobPosts.isEmpty()) {
             return new ArrayList<>();
-        }else if(page.hasNext()){
+        } else if (page.hasNext()) {
             return jobPosts;
-        }else{
+        } else {
             List<JobPostDTO> newJobPosts = page
                     .getContent()
                     .stream()
@@ -192,9 +191,9 @@ public class JobPostServiceImpl implements JobPostService {
     // ==========================Retrieve User's Job Posts per Day==================================
     public List<Object[]> retrieveUsersPerDayJobPosts(int pageNumber) {
         int pageSize = 7;
-        Sort sort = Sort.by("jobDate").descending();
+        Sort sort = Sort.by(JOB_DATE).descending();
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
-        Page<Object[]> page = jobPostRepository.countUsersPostPerDay(userService.getAuthenticatedUser(), pageable );
+        Page<Object[]> page = jobPostRepository.countUsersPostPerDay(userService.getAuthenticatedUser(), pageable);
         List<Object[]> jobPostPerDay = new ArrayList<>(page.getContent());
         if (jobPostPerDay.isEmpty()) {
             return new ArrayList<>();
@@ -224,7 +223,7 @@ public class JobPostServiceImpl implements JobPostService {
                     result.setJobPostCount(count);
                     return result;
                 })
-                .collect(Collectors.toList());
+                .toList();
         log.info("Value of List Top Performers: " + topPerformerDTOs);
         return topPerformerDTOs;
     }
@@ -241,12 +240,12 @@ public class JobPostServiceImpl implements JobPostService {
                 .findJobPostByFilters(jobTitle, companyName, jobDescription, jobDate, status)
                 .stream()
                 .map(JobPostMapper.INSTANCE::toDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     // ==================================Retrieve Job Posts Containing String==========================================
     public List<JobPostDTO> retrieveJobPostsContainingString(String string, int pageNumber) {
-        Sort sort = Sort.by("jobDate").descending();
+        Sort sort = Sort.by(JOB_DATE).descending();
         int pageSize = 50;
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
         Page<JobPost> page = jobPostRepository.findJobPostContainingString(string, pageable);
@@ -257,9 +256,9 @@ public class JobPostServiceImpl implements JobPostService {
 
         if (jobPostDTOs.isEmpty()) {
             return new ArrayList<>();
-        } else if(page.hasNext()){
+        } else if (page.hasNext()) {
             return jobPostDTOs;
-        }else{
+        } else {
             List<JobPostDTO> newJobPostDTOs = page.getContent().stream()
                     .map(JobPostMapper.INSTANCE::toDTO)
                     .filter(jobpost -> !jobpost.getClone())
@@ -277,13 +276,13 @@ public class JobPostServiceImpl implements JobPostService {
                         .stream()
                         .map(JobPostMapper.INSTANCE::toDTO)
                         .filter(jobpost -> !jobpost.getClone())
-                        .collect(Collectors.toList());
+                        .toList();
     }
 
     // ===================================Retrieve Job Counts Per Day===============================
     public List<Object[]> retrieveJobCountsPerDay(int pageNumber) {
         int pageSize = 7;
-        Sort sort = Sort.by("jobDate").descending();
+        Sort sort = Sort.by(JOB_DATE).descending();
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
         Page<Object[]> page = jobPostRepository.findJobCountPerDay(pageable);
         if (page.hasContent()) {

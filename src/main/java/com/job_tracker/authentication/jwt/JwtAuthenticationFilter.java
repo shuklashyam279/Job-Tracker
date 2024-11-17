@@ -1,13 +1,12 @@
-package com.job_tracker.jwtAuthentication;
+package com.job_tracker.authentication.jwt;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,19 +15,19 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.MalformedJwtException;
+import java.io.IOException;
 
 @Slf4j
-@AllArgsConstructor
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private JwtHelper jwtHelper;
+    private final JwtHelper jwtHelper;
+    private final UserDetailsService userDetailsService;
 
-    @Autowired
-    private UserDetailsService userDetailsService;
+    public JwtAuthenticationFilter(JwtHelper jwtHelper, UserDetailsService userDetailsService) {
+        this.jwtHelper = jwtHelper;
+        this.userDetailsService = userDetailsService;
+    }
 
     @Override
     protected void doFilterInternal(
@@ -41,32 +40,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         log.info("Header :  {}", requestHeader);
         String email = null;
         String token = null;
-
         if (requestHeader != null && requestHeader.startsWith("Bearer")) {
             //looking good
             token = requestHeader.substring(7);
-            try {
-                email = this.jwtHelper.getEmailFromToken(token);
-            } catch (IllegalArgumentException e) {
-                logger.info("Illegal Argument while fetching the email !!");
-                e.printStackTrace();
-            } catch (ExpiredJwtException e) {
-                logger.info("Given jwt token is expired !!");
-                e.printStackTrace();
-            } catch (MalformedJwtException e) {
-                logger.info("Some changed has done in token !! Invalid Token");
-                e.printStackTrace();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            email = extractEmailFromToken(token); // Refactored method call
         } else {
             logger.info("Invalid Header Value !! ");
         }
-
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             //fetch user detail from email
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(email);
-            Boolean validateToken = this.jwtHelper.validateToken(token, userDetails);
+            boolean validateToken = this.jwtHelper.validateToken(token, userDetails);
             if (validateToken) {
                 //set the authentication
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
@@ -77,5 +61,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         }
         filterChain.doFilter(request, response);
+    }
+
+    private String extractEmailFromToken(String token) {
+        try {
+            return this.jwtHelper.getEmailFromToken(token);
+        } catch (IllegalArgumentException e) {
+            logger.info("Illegal Argument while fetching the email !!");
+            e.printStackTrace();
+        } catch (ExpiredJwtException e) {
+            logger.info("Given jwt token is expired !!");
+            e.printStackTrace();
+        } catch (MalformedJwtException e) {
+            logger.info("Some changes have been made in token !! Invalid Token");
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null; // Return null if any exception occurs
     }
 }

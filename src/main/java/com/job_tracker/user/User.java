@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import jakarta. persistence. Transient;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -54,11 +55,13 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Nullable
     @JsonIgnore
+    @Transient
     private List<JobPost> jobPosts = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Nullable
     @JsonIgnore
+    @Transient
     private List<Resume> resumes = new ArrayList<>();
 
     @Override

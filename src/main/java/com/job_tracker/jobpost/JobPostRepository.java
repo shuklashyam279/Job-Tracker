@@ -14,13 +14,14 @@ import java.util.UUID;
 
 @Repository
 public interface JobPostRepository extends JpaRepository<JobPost, UUID> {
-    String sortBy = "jobDate";
 
     Page<JobPost> findByUser(User user, Pageable pageable);
 
     int countByUser(User user);
 
     boolean existsByUser(User user);
+
+    boolean existsByUserAndId(User user, UUID id);
 
     @Query("SELECT COUNT(e), e.jobDate FROM JobPost e WHERE e.user = :user GROUP BY e.jobDate ORDER BY e.jobDate DESC")
     Page<Object[]> countUsersPostPerDay(@Param("user") User user, Pageable pageable);
@@ -67,7 +68,7 @@ public interface JobPostRepository extends JpaRepository<JobPost, UUID> {
                     "jp.status LIKE %:string% OR " +
                     "jp.jobDescription LIKE %:string%)"
     )
-    List<JobPost> findUserJobPostContainingString(User user,@Param("string") String string);
+    List<JobPost> findUserJobPostContainingString(User user, @Param("string") String string);
 
     // ===============================Retrieve Job Posts Per Day=================================================
 

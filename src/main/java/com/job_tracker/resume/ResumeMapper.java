@@ -14,7 +14,7 @@ public interface ResumeMapper {
     @Mapping(target = "user", ignore = true)
     Resume toEntity(ResumeDTO resumeDTO);
 
-    ResumeFileDTO toFileDTO(Resume resume);
+    ResumeFileDTO toResumeFileDTO(Resume resume);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "resumeName", ignore = true)

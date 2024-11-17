@@ -1,6 +1,5 @@
 package com.job_tracker.user;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -12,16 +11,17 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     public User getAuthenticatedUser() {
         return (User) SecurityContextHolder
@@ -44,19 +44,20 @@ public class UserServiceImpl implements UserService{
         int pageSize = 50;
         Sort sort = Sort.by("fullName").ascending();
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
-        Page<User> page=  userRepository.findAll(pageable);
-        List<UserDTO> users = page.stream().map(UserMapper.INSTANCE::toDTO).collect(Collectors.toList());
-        if(page.hasContent()){
+        Page<User> page = userRepository.findAll(pageable);
+        List<UserDTO> users = page.stream().map(UserMapper.INSTANCE::toDTO).toList();
+        if (page.hasContent()) {
             return users;
-        }else{
-            if(page.hasNext()){
+        } else {
+            if (page.hasNext()) {
                 pageable = pageable.next();
-                page = userRepository.findAll(pageable);
-            }else{
+                return userRepository.findAll(pageable).stream()
+                        .map(UserMapper.INSTANCE::toDTO)
+                        .toList();
+            } else {
                 return new ArrayList<>();
             }
         }
-        return users;
     }
 
     public UserDTO getUserDetails() {

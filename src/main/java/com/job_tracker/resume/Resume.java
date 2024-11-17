@@ -48,7 +48,7 @@ public class Resume {
 
             return fileName;
         } catch (Exception e) {
-            throw new RuntimeException("Failed to extract file name from resume", e);
+            throw new ResumeException("Failed to extract file name from resume", e);
         }
     }
 

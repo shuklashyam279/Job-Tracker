@@ -12,18 +12,22 @@ import java.util.UUID;
 @RestController
 public class ResumeController {
 
+    private final ResumeService resumeService;
+
     @Autowired
-    private ResumeServiceImpl resumeServicesImpl;
+    public ResumeController(ResumeServiceImpl resumeService) {
+        this.resumeService = resumeService;
+    }
 
     @GetMapping("/v1/all-resume")
     public List<ResumeDTO> getAllResume() {
-        return resumeServicesImpl.getAllResume();
+        return resumeService.getAllResume();
     }
 
     @PostMapping("/v1/create-resume")
     public ResponseEntity<?> createResume(@RequestParam("file") MultipartFile file) {
         try {
-            return ResponseEntity.status(HttpStatus.CREATED).body(resumeServicesImpl.saveResume(file));
+            return ResponseEntity.status(HttpStatus.CREATED).body(resumeService.saveResume(file));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
@@ -32,7 +36,7 @@ public class ResumeController {
     @GetMapping("/v1/user-resume-count")
     public ResponseEntity<?> countUsersResume() {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(resumeServicesImpl.countUserResumes());
+            return ResponseEntity.status(HttpStatus.OK).body(resumeService.countUserResumes());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
@@ -41,7 +45,7 @@ public class ResumeController {
     @GetMapping("/v1/retrieve-user-resumes")
     public ResponseEntity<?> retrieveUserResume() {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(resumeServicesImpl.retrieveUserResumes());
+            return ResponseEntity.status(HttpStatus.OK).body(resumeService.retrieveUserResumes());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
@@ -50,7 +54,7 @@ public class ResumeController {
     @DeleteMapping("/v1/delete-user-resume")
     public ResponseEntity<String> deleteUserResume(UUID resumeId) {
         try {
-            resumeServicesImpl.deleteUserResume(resumeId);
+            resumeService.deleteUserResume(resumeId);
             return ResponseEntity.status(HttpStatus.OK).body("Resume Deleted Successfully with ID: " + resumeId);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -60,7 +64,7 @@ public class ResumeController {
     @GetMapping("/v1/download-user-resume")
     public ResponseEntity<?> downloadUserResume(@RequestParam UUID resumeId) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(resumeServicesImpl.downloadUserResume(resumeId));
+            return ResponseEntity.status(HttpStatus.OK).body(resumeService.downloadUserResume(resumeId));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }

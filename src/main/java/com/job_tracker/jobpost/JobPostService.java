@@ -1,7 +1,6 @@
 package com.job_tracker.jobpost;
 
 import com.job_tracker.dashboard.TopPerformerDTO;
-import com.job_tracker.user.User;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;

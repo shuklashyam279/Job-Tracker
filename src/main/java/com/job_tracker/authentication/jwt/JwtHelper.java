@@ -1,24 +1,23 @@
-package com.job_tracker.jwtAuthentication;
+package com.job_tracker.authentication.jwt;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
-
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-
 @Component
 public class JwtHelper {
 
     //requirement :
-    public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60; // this is 5hr * 60min * 60 seconds
+    public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60L; // this is 5hr * 60min * 60 seconds
 
-    private final String secret =
+    private static final String SECRET =
             "gPrIycydv5eLlRQcwEbUsJ+vx2tAOYSfaLwJ0/+sC0Hb42B4A7Z/YkDr2qOe+Y12RodSvp8kCn8luVscejWS4plmvFap4fZrgzTDjEMOlZwwy7ABRucCzolQwSF6dohYR3j9PN4TkE772O15mRC7kN1LllbhraKgZVS6sW1rjqHXlrj2bDgbMoMtYhbaicwSabk1Dn+mC6gVZiWxg+m++3wthbIlZ3WlUbDzuDp0RNeOO0nA";
 
     //retrieve username from jwt token
@@ -41,7 +40,7 @@ public class JwtHelper {
 
     //for retrieving any information from token we will need the secret key
     private Claims getAllClaimsFromToken(String token) {
-        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+        return Jwts.parserBuilder().setSigningKey(SECRET).build().parseClaimsJws(token).getBody();
     }
 
     //check if the token has expired
@@ -70,7 +69,7 @@ public class JwtHelper {
                 .setExpiration(
                         new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000)
                 ) // converting to milliseconds
-                .signWith(SignatureAlgorithm.HS512, secret)
+                .signWith(SignatureAlgorithm.HS512, SECRET)
                 .compact();
     }
 
